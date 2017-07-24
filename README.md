@@ -4,11 +4,11 @@ This is a project to demonstrate dockerizing a Spring Boot application, pushing 
 and deploying it to AWS (ECS Cluster).
 
 ## High Level Steps
+1. [Set up your Git Repository](docs/00-GitRepository.md)
 1. [Setup SSH Keys](./docs/00-SSHKey.md)
 1. [Set yourself up in AWS](./docs/01-AwsAccount.md) (account, key pair, decide your region, etc)
-1. [Set yourself up with a Docker Registry](./docs/02-DockerHub.md))
-1. [Set up your Git Repository](docs/02-GitRepository.md)
-1. [Create a simple ECS Cluster](./docs/03-ECSCluster.md) (with custom attribute "stack" = "testing")
+1. [Set yourself up with a Docker Registry](./docs/02-DockerHub.md)
+1. [Create a simple ECS Cluster](./docs/03-ECSCluster.md)
 1. [Provision a **Jenkins Server**](./docs/04-JenkinsServer.md)
     1. [Put Jenkins Server Public Key on GitHub project](docs/05-JenkinsGitHub.md)
     1. [Configure for Maven](./docs/06-ConfigureMavenTool.md)
@@ -19,6 +19,7 @@ and deploying it to AWS (ECS Cluster).
 ## Prerequisites
 
  * You can execute `bash` commands (in Windows, download and use **GitBash**)
+ * You can clone a git repository (you have git installed and the required tools to clone a repository)
  * You have an AWS account where you have the necessary permissions to do the following (Administrator access preferable):
     * Import a Key Pair
     * Create a Stack using Cloud Formation

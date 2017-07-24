@@ -7,6 +7,7 @@ file, and trigger a build.
 This repository is public, but you may not be permitted to make changes. Therefore, you should **clone** this repository,
 and stand up your own. Below are the steps to do so in GitHub.
 
+---
 ## Clone the repository as an anonymous user
 Use a terminal window, or **GitBash**:
 
@@ -37,30 +38,14 @@ git commit -m "first commit"
 
 Keep this window open.
 
+---
 ## Create your account
-Go to [GitHub](https://github.com) and **Sign up for GitHub** if you do not have one already.
+Go to <a href="https://github.com">GitHub</a> and **Sign up for GitHub** if you do not have an account already.
 
-### Add your SSH key
-You created this key in a [previous step](./docs/00-SSHKey.md):
+After you do, be sure to [Add a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/),
+so that you have access to push code to it from the command line.
 
-1. Put key into your clipboard:
-
-  * On **Mac**: `pbcopy < ~/.ssh/id_rsa.pub`
-  * On **Windows in GitBash**: `clip < ~/.ssh/id_rsa.pub`
-  * On **Linux**: 
-      ```shell
-      # on linux open the key in an editor and copy to clipboard
-      # prefer `vim` over `cat` to prevent public key from being displayed in bash history
-      vim ~/.ssh/id_rsa.pub
-      
-      # exit editor using `:q!` (without quotes to prevent saving any accidental edits)
-      ```
-
-1. In GitHub, go to your profile picture, and click **Settings** | **SSH Keys**
-1. Click **New SSH key**
-1. Paste your key in, and give it a name (for instance, the name of the machine you are on)
-1. Click **Add SSH Key**
-
+---
 ## Create the repository
 In this step, you will create a "remote" repository that Jenkins can access to pull code for the build.
 
@@ -74,8 +59,9 @@ and give your repository the name "`hello-world-docker-aws`"
 
 We will be **pushing an existing repository from the command line**.
 
+---
 ## Push your code to your new repository
-In order to do this, you can copy the code snippet under the title **...or push an existing repository from the command line** and execute it.
+In order to do this, you can copy the code snippet under the title "**...or push an existing repository from the command line**" and execute it.
 
 Below are the steps with a small explanation for each command.
 ```shell
@@ -87,7 +73,22 @@ git push --u origin master
 ```
 
 ---
+## How to get the SSH URL for your repository
+There are two urls for a GitHub project:
+
+  * HTTPS: `https://github.com/simoncomputing/hello-world-docker-aws.git`
+  * SSH: `git@github.com:simoncomputing/hello-world-docker-aws.git`
+  
+When you cloned this repository, you used the `HTTPS` url, which you can use "anonymously" (without logging in).
+
+However, when you configure Jenkins to pull from your new repository, you need to give it the `SSH` url. Here is how you get it:
+
+ 1. On your project's main page, click the **Clone or download** button (it's _GREEN_).
+ 1. If the pop-over says **Clone with HTTPS**, click on the **Use SSH* link.
+ 1. If the pop-over says **Clone with SSH**, click the clipboard button to copy the SSH url into your clipboard.
+
+---
 ## Resources
  * [Adding a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 
-**Next:** [Deploy the ECS Cluster](./03-ECSCluster.md)
+**Next:** [Set yourself up in AWS](01-AwsAccount.md)

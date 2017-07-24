@@ -33,35 +33,16 @@ Log into AWS if you haven't already, and pick the region using the drop down in 
 This sets your region so that as you navigate around, you do not have to keep selecting the region. 
 
 ---
-## Setup a Key Pair for SSH access to EC2 Instances
-This project's documentation expects you to connect to the necessary instances using your user's default key (~/.ssh/id_rsa.pub).
-
-Setup an SSH key for your operating system using the instructions on 
-[GitHub Help on Generating a new SSH Key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
-
-1. Put Public key into your clipboard:
-
-  * On **Mac**: `pbcopy < ~/.ssh/id_rsa.pub`
-  * On **Windows in GitBash**: `clip < ~/.ssh/id_rsa.pub`
-  * On **Linux**: 
-    ```shell
-    # on linux open the key in an editor and copy to clipboard
-    # prefer `vim` over `cat` to prevent public key from being displayed in bash history
-    vim ~/.ssh/id_rsa.pub
-        
-    # exit editor using `:q!` (without quotes to prevent saving any accidental edits)
-    ```
-
-### Paste your Public Key to an AWS Key Pair for your selected region
+## Paste your Public Key to an AWS Key Pair for your selected region
 
 1. Go to the **EC2 Dashboard** and click on **Key Pairs** in the left pane
 1. Click **Import Key Pair**
   * **Key pair name:** "`hello-world-ecs`" (if you call it something else, use that name instead)
-  * **Public key contents:** (paste your public key)
+  * **Public key contents:** (paste your public key [that you created](./00-SSHKey.md))
 1. Click **Import**
     
 From now on, if you create an EC2 instance that you will need to SSH into, you can use this "existing key pair" and that
 will allow you to connect without any fuss (e.g., `ssh ec2-user@<instance_ip>`).
 
 
-**Next:** [Clone Git Repository](02-GitRepository.md)
+**Next:** [Set yourself up in DockerHub](./02-DockerHub.md)

@@ -1,6 +1,7 @@
 [Back to Top](../README.md)
  
 # Jenkins Docker Credentials
+Here we add the username and password for your DockerHub account. This allows Jenkins to _PUSH_ an image to your account.
 
 1. In Jenkins, go to **Credentials** | **(global)** | **Add Credential**
     * **Kind:** "`Username with password`"

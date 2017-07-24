@@ -32,7 +32,7 @@ This is to permit Jenkins to clone the repository. If you are using a different 
 but might be accessed slightly differently.
 
 1. Navigate to the Project, and select **Settings** | **Repository** and scroll down to **Deploy Keys**
-1. Paste the key into the **Key** field and name it **Jenkins**
+1. Paste the key into the **Key** field and name it **Jenkins hello-world**
 1. Click **Add Key**
 
 ## Test your connection to GitHub

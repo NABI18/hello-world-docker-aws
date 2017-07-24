@@ -22,20 +22,19 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
-        AwsRegion = 'us-east-1'
-        DockerRegistry = 'https://index.docker.io/v1/'
-        DockerImageName = 'simoncomputing-public/hello-world-docker-aws'
-        EcsClusterName = 'hello-world'
+        DOCKER_IMAGE_NAME = 'simoncomputing-public/hello-world-docker-aws'
+        AWS_REGION = 'us-east-1'
+        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
+        ECS_CLUSTER_NAME = 'hello-world'
     }
   ```
-  
-1. **`GIT_URL`** should be the **SSH** url for your project
-1. **`AwsRegion`** change if needed
-1. **`DockerRegistry`**
-  * For DockerHub, use `https://index.docker.io/v1/`
-1. **`DockerImageName`**
-  * For DockerHub, use `<your_account>/<image_name>` (e.g., `jdoe/hello-world-docker-aws`)
-1. **`EcsClusterName`** this must match the value of your cluster (in AWS, go to **EC2 Container Service** | **Clusters** to check the name)
+
+1. **`REGISTRY_CREDENTIAL_ID`** matches the ID of the [Docker Credentials you created previously](./07-DockerCredentials.md)
+1. **`GIT_URL`** change to the **SSH** url for your project
+1. **`DOCKER_IMAGE_NAME`** change to the `namespace/hello-world-docker-aws` for your docker repository
+1. **`AWS_REGION`** change if needed
+1. **`DOCKER_REGISTRY`** For DockerHub, use `https://index.docker.io/v1/`
+1. **`ECS_CLUSTER_NAME`** this must match the value of your cluster (in AWS, go to **EC2 Container Service** | **Clusters** to check the name)
 
 1. Commit and push your changes
 

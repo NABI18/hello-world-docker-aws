@@ -2,7 +2,7 @@
 
 # Setup a Key Pair for SSH access to GitHub and AWS EC2 Instances
 Setup an SSH key for your operating system using the instructions on 
-[GitHub Help on Generating a new SSH Key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
+<a href="https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/" target="_blank">GitHub Help on Generating a new SSH Key</a>.
 
 ## How to securely put your Public key into your clipboard:
 
