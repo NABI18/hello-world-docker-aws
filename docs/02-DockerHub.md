@@ -9,7 +9,7 @@ Then in a separate process, AWS pulls the image to deploy it as a container in t
 ---
 ## Create a DockerHub Repository
 
-You must [sign up for an account]((https://hub.docker.com/billing-plans/)) or log in.
+You must [sign up for an account](https://hub.docker.com/billing-plans/) or log in.
  
  1. **Create Repository**
    * Repository Name: `hello-world-docker-aws`
