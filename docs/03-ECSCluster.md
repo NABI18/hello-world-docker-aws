@@ -4,7 +4,9 @@
 For this task, we'll use a **CloudFormation** Template to quickly stand up a **Stack**.
 
 1. In AWS, go to **CLoudFormation** | **Create Stack**
-1. **Upload a template to Amazon S3** then **choose file** and go to your clone directory and pick `{project_dir}/cloudformation/ecs-cluster.template`
+1. **Upload a template to Amazon S3** then **choose file** and go to your clone directory, 
+pick `{project_dir}/cloudformation/ecs-cluster.template`,
+then click **Next**
 1. Fill in the parameters (for best results, launch into a new VPC)
     * **Stack name:** "`EcsClusterStack`"
     * **KeyName:** "`hello-world-ecs`"
