@@ -12,6 +12,7 @@ then click **Next**
     * **EcsStackName:** '`EcsClusterStack`' (same name that you used for the Ecs Cluster Stack you created previously)
 1. Click **Next**
 1. Click **Next** after adding tags or notifications (if you like)
+  * Add a "Name" tag with value "Jenkins - hello-world"
 1. Click the acknowledgement checkbox, then click **Create**
 1. Wait for the stack to build. You can watch progress by clicking the **Events** tab in the detail pane.
 
