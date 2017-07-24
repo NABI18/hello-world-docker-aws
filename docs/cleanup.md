@@ -1,3 +1,5 @@
+[Back to Top](../README.md)
+
 # Cleaning up
 
 ## Delete the Service
@@ -25,8 +27,8 @@ when you created the stacks.
 ## Key Pairs
 If desired, remove the key pairs you created for your local machine access.
 
-## GitLab Deploy Keys
-Since you just removed the Jenkins stack, the deploy key you added to GitLab is no longer valid. Go and delete it.
+## GitHub Deploy Keys
+Since you just removed the Jenkins stack, the deploy key you added to GitHub is no longer valid. Go and delete it.
 
 ## Container Images
 You might want to remove the images from your Docker Repository just to be tidy.

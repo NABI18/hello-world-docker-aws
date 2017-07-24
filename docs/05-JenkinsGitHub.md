@@ -1,4 +1,6 @@
-# Give Jenkins Access to GitLab
+[Back to Top](../README.md)
+
+# Give Jenkins Access to GitHub
 
 1. Go to the **EC2** Dashboard and find the Jenkins server (make sure it is fully initialized)
 1. Get its **Public IP** 
@@ -25,7 +27,7 @@ vim ~/.ssh/id_rsa.pub
 ```
 Keep this window open.
 
-## Add SSH public key to GitLab
+## Add SSH public key to GitHub
 This is to permit Jenkins to clone the repository. If you are using a different Git Repository, the process is very similar,
 but might be accessed slightly differently.
 
@@ -33,9 +35,9 @@ but might be accessed slightly differently.
 1. Paste the key into the **Key** field and name it **Jenkins**
 1. Click **Add Key**
 
-## Test your connection to GitLab
-1. Go back to the open SSH connection and try `ssh git@gitlab.com`
-    - it should say "Welcome to GitLab"
+## Test your connection to GitHub
+1. Go back to the open SSH connection and try `ssh git@github.com`
+    - it should say "Hi <username>! You've successfully authenticated, but GitHub does not provide shell access"
     
 ## Initialize Jenkins
 1. Paste the IP address for jenkins into a browser.

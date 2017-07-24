@@ -11,10 +11,10 @@ pipeline {
 
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
-        GIT_URL = 'git@gitlab.com:simoncomputing-public/hello-world-docker-aws.git'
-        AwsRegion = 'us-west-2'
-        DockerRegistry = 'https://registry.gitlab.com/simoncomputing-public/hello-world-docker-aws'
-        DockerImageName = 'registry.gitlab.com/simoncomputing-public/hello-world-docker-aws'
+        GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
+        AwsRegion = 'us-east-1'
+        DockerRegistry = 'https://index.docker.io/v1/'
+        DockerImageName = 'simoncomputing-public/hello-world-docker-aws'
         EcsClusterName = 'hello-world'
     }
 
@@ -91,44 +91,6 @@ pipeline {
             }
         }
     }
-
-/*
-    post {
-        success {
-            echo 'Build successful'
-            updateGitlabCommitStatus name: 'jenkins', state: 'success'
-        }
-
-        failure {
-            emailext (
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-            )
-            updateGitlabCommitStatus name: 'jenkins', state: 'failed'
-        }
-
-        changed {
-            echo 'Build result changed'
-            script {
-                if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
-                    emailext (
-                        subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                        body: """<p>SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                            <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                        recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-                    )
-                }
-            }
-
-        }
-
-        always {
-            deleteDir()
-        }
-    }
-    */
 
 }
 

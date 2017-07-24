@@ -1,3 +1,5 @@
+[Back to Top](../README.md)
+
 # Provision Jenkins Server
 For this task, we'll use a **CloudFormation** Template to quickly stand up a **Jenkins Stack**.
 
@@ -14,4 +16,4 @@ For this task, we'll use a **CloudFormation** Template to quickly stand up a **J
 1. Click the acknowledgement checkbox, then click **Create**
 1. Wait for the stack to build. You can watch progress by clicking the **Events** tab in the detail pane.
 
-**Next:** [Give Jenkins Access to the GitLab Repository](./05-JenkinsGitLab.md)
+**Next:** [Give Jenkins Access to the GitHub Repository](05-JenkinsGitHub.md)

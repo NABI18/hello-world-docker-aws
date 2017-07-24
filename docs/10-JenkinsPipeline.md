@@ -1,3 +1,5 @@
+[Back to Top](../README.md)
+
 # Configure a Build Job
 
 1. In Jenkins, click **New Item**
@@ -6,7 +8,7 @@
 1. Scroll down to the **Pipeline** section
   * **Definition:** "`Pipeline script from SCM`"
   * **SCM:** "`Git`"
-    * **Repository URL:** "`git@gitlab.com:simoncomputing-public/hello-world-docker-aws.git`" (your repository url)
+    * **Repository URL:** "`git@github.com:simoncomputing/hello-world-docker-aws.git`" (your repository url)
     * **Lightweight Checkout:**  `[true]`
 1. Click **Save**
 
@@ -19,10 +21,10 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
   ```groovy
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
-        GIT_URL = 'git@gitlab.com:simoncomputing-public/hello-world-docker-aws.git'
-        AwsRegion = 'us-west-2'
-        DockerRegistry = 'https://registry.gitlab.com/simoncomputing-public/hello-world-docker-aws'
-        DockerImageName = 'registry.gitlab.com/simoncomputing-public/hello-world-docker-aws'
+        GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
+        AwsRegion = 'us-east-1'
+        DockerRegistry = 'https://index.docker.io/v1/'
+        DockerImageName = 'simoncomputing-public/hello-world-docker-aws'
         EcsClusterName = 'hello-world'
     }
   ```
@@ -30,10 +32,8 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
 1. **`GIT_URL`** should be the **SSH** url for your project
 1. **`AwsRegion`** change if needed
 1. **`DockerRegistry`**
-  * if you are using GitLab, modify the url to the one for your Registry (click on **Registry** from the project page)
   * For DockerHub, use `https://index.docker.io/v1/`
 1. **`DockerImageName`**
-  * if you are using GitLab, modify the image name to the one for your registry
   * For DockerHub, use `<your_account>/<image_name>` (e.g., `jdoe/hello-world-docker-aws`)
 1. **`EcsClusterName`** this must match the value of your cluster (in AWS, go to **EC2 Container Service** | **Clusters** to check the name)
 

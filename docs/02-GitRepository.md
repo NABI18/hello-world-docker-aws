@@ -1,3 +1,5 @@
+[Back to Top](../README.md)
+
 # Set yourself up in GitHub
 In order to work with this project and have it demonstrate CI/CD, you must have the ability to make a change to the code
 file, and trigger a build.
@@ -39,7 +41,7 @@ Keep this window open.
 Go to [GitHub](https://github.com) and **Sign up for GitHub** if you do not have one already.
 
 ### Add your SSH key
-You created this key in the previous step:
+You created this key in a [previous step](./docs/00-SSHKey.md):
 
 1. Put key into your clipboard:
 
@@ -56,7 +58,7 @@ You created this key in the previous step:
 
 1. In GitHub, go to your profile picture, and click **Settings** | **SSH Keys**
 1. Click **New SSH key**
-1. Paste your key in, and give it a reasonable name (for instance, the name of the machine you are on)
+1. Paste your key in, and give it a name (for instance, the name of the machine you are on)
 1. Click **Add SSH Key**
 
 ## Create the repository
@@ -83,5 +85,9 @@ git remote add origin '<repo_url>'
 # push to remote 'master' branch and make master default for git pull/push
 git push --u origin master
 ```
+
+---
+## Resources
+ * [Adding a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 
 **Next:** [Deploy the ECS Cluster](./03-ECSCluster.md)
