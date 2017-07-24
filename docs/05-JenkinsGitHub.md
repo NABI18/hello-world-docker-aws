@@ -31,13 +31,13 @@ Keep this window open.
 This is to permit Jenkins to clone the repository. If you are using a different Git Repository, the process is very similar,
 but might be accessed slightly differently.
 
-1. Navigate to the Project, and select **Settings** | **Repository** and scroll down to **Deploy Keys**
+1. Navigate to the Project, and select **Settings** | **Deploy Keys** | **Add Deploy Key**
 1. Paste the key into the **Key** field and name it **Jenkins hello-world**
-1. Click **Add Key**
+1. Click **Add Key** and type your password
 
 ## Test your connection to GitHub
 1. Go back to the open SSH connection and try `ssh git@github.com`
-    - it should say "Hi <username>! You've successfully authenticated, but GitHub does not provide shell access"
+    - it should say "Hi `<username>/hello-world-docker-aws`! You've successfully authenticated, but GitHub does not provide shell access"
     
 ## Initialize Jenkins
 1. Paste the IP address for jenkins into a browser.
