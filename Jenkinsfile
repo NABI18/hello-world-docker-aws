@@ -12,7 +12,7 @@ pipeline {
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
-        DOCKER_IMAGE_NAME = 'simoncomputing-public/hello-world-docker-aws'
+        DOCKER_IMAGE_NAME = 'brightgarden/hello-world-docker-aws'
         AWS_REGION = 'us-west-2'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
