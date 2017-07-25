@@ -13,7 +13,7 @@ pipeline {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
         DOCKER_IMAGE_NAME = 'simoncomputing-public/hello-world-docker-aws'
-        AWS_REGION = 'us-east-1'
+        AWS_REGION = 'us-west-2'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
         LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
