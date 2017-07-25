@@ -16,6 +16,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
+        LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
     }
 
     stages {
@@ -23,7 +24,7 @@ pipeline {
         stage('checkout') {
             steps {
                 deleteDir()
-                git branch: 'master',
+                git branch: 'feature/add_alb',
                         url: "${GIT_URL}"
             }
         }
@@ -55,6 +56,7 @@ pipeline {
                     CLUSTER="$ECS_CLUSTER_NAME"
                     FAMILY=`cat taskdef.json | jq -r .family`
                     NAME=`cat taskdef.json | jq -r .containerDefinitions[].name`
+                    PORT=`cat taskdef.json | jq -r .containerDefinitions[].portMappings[].containerPort`
                     SERVICE_NAME=${NAME}-service
                     REPOSITORY_URI="$DOCKER_IMAGE_NAME"
 
@@ -77,14 +79,28 @@ pipeline {
                         DESIRED_COUNT="1"
                       else
                         echo "stopping current task definition..."
-                        aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} --desired-count 0
+                        aws ecs update-service \
+                          --cluster ${CLUSTER} \
+                          --region ${REGION} \
+                          --service ${SERVICE_NAME} \
+                          --desired-count 0
                         sleep 30
                       fi
                       echo " == starting next revision == "
-                      aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} --task-definition ${FAMILY}:${REVISION} --desired-count 1
+                      aws ecs update-service \
+                        --cluster ${CLUSTER} \
+                        --region ${REGION} \
+                        --service ${SERVICE_NAME} \
+                        --task-definition ${FAMILY}:${REVISION} --desired-count 1
                     else
                       echo "entered new service"
-                      aws ecs create-service --service-name ${SERVICE_NAME} --desired-count 1 --task-definition ${FAMILY} --cluster ${CLUSTER} --region ${REGION}
+                      aws ecs create-service \
+                        --service-name ${SERVICE_NAME} \
+                        --desired-count 1 \
+                        --task-definition ${FAMILY} \
+                        --cluster ${CLUSTER} \
+                        --region ${REGION} \
+                        --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT}
                     fi
 
                 ''' // end shell script
