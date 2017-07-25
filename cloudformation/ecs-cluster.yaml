@@ -239,13 +239,43 @@ Resources:
           FromPort: !Ref EcsPort
           ToPort: !Ref EcsPort
 
+  ServiceRolePolicy:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ecs-service-${AWS::StackName}
+      Path: /
+      AssumeRolePolicyDocument:
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+              - "ec2.amazonaws.com"
+          Action:
+            - "sts:AssumeRole"
+      Policies:
+        - PolicyName: !Sub ecs-service-${AWS::StackName}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:Describe*
+                  - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
+                  - elasticloadbalancing:DeregisterTargets
+                  - elasticloadbalancing:Describe*
+                  - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+                  - elasticloadbalancing:RegisterTargets
+                  - elasticloadbalancing:DescribeTargetGroups
+                  - elasticloadbalancing:DescribeTargetHealth
+                Resource: *
+
   EcsInstancePolicy:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: "Allow"
             Principal:
               Service:
                 - "ec2.amazonaws.com"
@@ -392,6 +422,6 @@ Outputs:
     Description: The Target Group for the ALB
     Value: !Ref DefaultTargetGroup
 
-  EcsRole:
-    Description: The IAM Role for the Cluster
-    Value: !Ref EcsInstancePolicy
+  ServiceRole:
+    Description: The IAM Role for Services in the Cluster
+    Value: !Ref ServiceRolePolicy
