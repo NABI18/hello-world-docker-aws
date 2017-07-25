@@ -101,7 +101,7 @@ pipeline {
                         --task-definition ${FAMILY} \
                         --cluster ${CLUSTER} \
                         --region ${REGION} \
-                        --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT}
+                        --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT} \
                         --role ${LB_IAM_ROLE}
                     fi
 
