@@ -391,3 +391,7 @@ Outputs:
   DefaultTarget:
     Description: The Target Group for the ALB
     Value: !Ref DefaultTargetGroup
+
+  EcsRole:
+    Description: The IAM Role for the Cluster
+    Value: !Ref EcsInstancePolicy

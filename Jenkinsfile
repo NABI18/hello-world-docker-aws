@@ -17,6 +17,7 @@ pipeline {
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
         LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
+        LB_IAM_ROLE = 'HelloWorldCluster-EcsInstancePolicy-7UY7TZUBQSPY'
     }
 
     stages {
@@ -101,6 +102,7 @@ pipeline {
                         --cluster ${CLUSTER} \
                         --region ${REGION} \
                         --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT}
+                        --role ${LB_IAM_ROLE}
                     fi
 
                 ''' // end shell script
