@@ -17,7 +17,7 @@ pipeline {
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
         LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
-        LB_IAM_ROLE = 'ecs-service-role'
+        LB_IAM_ROLE = 'arn:aws:iam::487471999079:role/esc-service-role'
     }
 
     stages {
