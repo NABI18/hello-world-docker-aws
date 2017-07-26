@@ -18,7 +18,7 @@ When you do so, make note of the following details which you will need to comple
 
  * [ ] Username
  * [ ] Password
- * [ ] Repository namespace
+ * [ ] Repository namespace (defaults to your username)
  * [ ] Repository name (`hello-world-docker-aws`)
  
 Because Jenkins needs access to push a new image to your DockerHub Repository, we need to configure credentials inside 
