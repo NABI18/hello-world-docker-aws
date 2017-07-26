@@ -17,7 +17,7 @@ pipeline {
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
         LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
-        LB_IAM_ROLE = 'arn:aws:iam::487471999079:role/esc-service-role'
+        LB_IAM_ROLE = 'ecs-service-role'
     }
 
     stages {
@@ -95,6 +95,15 @@ pipeline {
                         --task-definition ${FAMILY}:${REVISION} --desired-count 1
                     else
                       echo "entered new service"
+                      echo " == get role arn == "
+                      ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
+
+                      if [ "$ROLES" == "" ]; then
+                        echo "No matching roles. Make sure ${LB_IAM_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
+                      fi
+
+                      LB_ROLE=`echo $ROLES | jq -r .Arn`
+
                       aws ecs create-service \
                         --service-name ${SERVICE_NAME} \
                         --desired-count 1 \
@@ -102,7 +111,7 @@ pipeline {
                         --cluster ${CLUSTER} \
                         --region ${REGION} \
                         --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT} \
-                        --role ${LB_IAM_ROLE}
+                        --role ${LB_ROLE}
                     fi
 
                 ''' // end shell script

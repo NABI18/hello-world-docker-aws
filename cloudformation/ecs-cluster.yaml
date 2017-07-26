@@ -238,6 +238,7 @@ Resources:
           CidrIp: !Ref SourceCidr
           FromPort: !Ref EcsPort
           ToPort: !Ref EcsPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
   ServiceRolePolicy:
     Type: AWS::IAM::Role
@@ -325,13 +326,25 @@ Resources:
           Value: !Sub ECS Instance - ${AWS::StackName}
           PropagateAtLaunch: true
 
+  LoadBalancerSecurityGroup:
+    Condition: CreateSecurityGroup
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Port 80 for HTTP ECS Access
+      VpcId: !If [ CreateVpcResources, !Ref Vpc, !Ref VpcId ]
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+          FromPort: 80
+          ToPort: 80
+
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: !Sub ${AWS::StackName}
       Subnets: !If [ CreateVpcResources, [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ], !Ref SubnetIds ]
       SecurityGroups:
-        - !If [ CreateSecurityGroup, !Ref EcsSecurityGroup, !Ref SecurityGroup ]
+        - LoadBalancerSecurityGroup
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}
