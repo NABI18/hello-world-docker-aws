@@ -28,8 +28,7 @@ vim ~/.ssh/id_rsa.pub
 Keep this window open.
 
 ## Add SSH public key to GitHub
-This is to permit Jenkins to clone the repository. If you are using a different Git Repository, the process is very similar,
-but might be accessed slightly differently.
+This is to permit Jenkins to clone the repository.
 
 1. Navigate to the Project, and select **Settings** | **Deploy Keys** | **Add Deploy Key**
 1. Paste the key into the **Key** field and name it **Jenkins hello-world**
