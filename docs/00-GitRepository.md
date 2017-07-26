@@ -40,7 +40,7 @@ Keep this window open.
 
 ---
 ## Create your account
-Go to <a href="https://github.com">GitHub</a> and **Sign up for GitHub** if you do not have an account already.
+Go to [GitHub]https://github.com) and **Sign up for GitHub** if you do not have an account already.
 
 After you do, be sure to [Add a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/),
 so that you have access to push code to it from the command line.
@@ -84,8 +84,8 @@ When you cloned this repository, you used the `HTTPS` url, which you can use "an
 However, when you configure Jenkins to pull from your new repository, you need to give it the `SSH` url. Here is how you get it:
 
  1. On your project's main page, click the **Clone or download** button (it's _GREEN_).
- 1. If the pop-over says **Clone with HTTPS**, click on the **Use SSH* link.
- 1. If the pop-over says **Clone with SSH**, click the clipboard button to copy the SSH url into your clipboard.
+   * If the pop-over says **Clone with HTTPS**, click on the **Use SSH** link.
+   * If the pop-over says **Clone with SSH**, click the clipboard button to copy the SSH url into your clipboard.
 
 ---
 ## Resources

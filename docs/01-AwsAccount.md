@@ -29,13 +29,14 @@ Only the following regions are supported by this project's CloudFormation templa
 | ap-southeast-2 | Asia Pacific (Syndey) |
 | sa-east-1 | South America (São Paulo) |
 
-Log into AWS if you haven't already, and pick the region using the drop down in the top nav bar. 
+1. Log into AWS if you haven't already, click on the **Services** drop down in the menu, and go to **EC2**.
+1. Pick your region using the drop down in the top nav bar.
 This sets your region so that as you navigate around, you do not have to keep selecting the region. 
 
 ---
 ## Paste your Public Key to an AWS Key Pair for your selected region
 
-1. Go to the **EC2 Dashboard** and click on **Key Pairs** in the left pane
+1. In the **EC2 Dashboard** and click on **Key Pairs** in the left pane
 1. Click **Import Key Pair**
   * **Key pair name:** "`hello-world-ecs`" (if you call it something else, use that name instead)
   * **Public key contents:** (paste your public key [that you created](./00-SSHKey.md))
@@ -44,5 +45,9 @@ This sets your region so that as you navigate around, you do not have to keep se
 From now on, if you create an EC2 instance that you will need to SSH into, you can use this "existing key pair" and that
 will allow you to connect without any fuss (e.g., `ssh ec2-user@<instance_ip>`).
 
+-- 
+## Resources
+ * [Creating Your First IAM Admin User and Group](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html)
+ * [Amazon EC2 Key Pairs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
 
 **Next:** [Set yourself up in DockerHub](./02-DockerHub.md)

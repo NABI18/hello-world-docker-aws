@@ -8,7 +8,7 @@
 1. Scroll down to the **Pipeline** section
   * **Definition:** "`Pipeline script from SCM`"
   * **SCM:** "`Git`"
-    * **Repository URL:** "`git@github.com:simoncomputing/hello-world-docker-aws.git`" (your repository url)
+    * **Repository URL:** (<a href="https://github.com/simoncomputing/hello-world-docker-aws/blob/master/docs/00-GitRepository.md#how-to-get-the-ssh-url-for-your-repository" target="_blank">Your repository's SSH URL</a>)
     * **Lightweight Checkout:**  `[true]`
 1. Click **Save**
 
@@ -26,15 +26,33 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
         AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
+        
+        // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
+        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-east-1:487471999079:targetgroup/default/8eab6a3694cef2e2'
+        SERVICE_ROLE = 'ecs-service-EcsClusterStack'
     }
   ```
 
-1. **`REGISTRY_CREDENTIAL_ID`** matches the ID of the [Docker Credentials you created previously](./07-DockerCredentials.md)
-1. **`GIT_URL`** change to the **SSH** url for your project
-1. **`DOCKER_IMAGE_NAME`** change to the `namespace/hello-world-docker-aws` for your docker repository
-1. **`AWS_REGION`** change if needed
-1. **`DOCKER_REGISTRY`** For DockerHub, use `https://index.docker.io/v1/`
-1. **`ECS_CLUSTER_NAME`** this must match the value of your cluster (in AWS, go to **EC2 Container Service** | **Clusters** to check the name)
+| variable | description |
+| -------- | ----------- |
+| `REGISTRY_CREDENTIAL_ID` | matches the ID of the [Docker Credentials you created previously](./07-DockerCredentials.md) |
+| `GIT_URL` | change to the **SSH** url for your project |
+| `DOCKER_IMAGE_NAME` | change to the `namespace/hello-world-docker-aws` for your docker repository |
+| `AWS_REGION` | change if needed |
+| `DOCKER_REGISTRY` | For DockerHub, use `https://index.docker.io/v1/` |
+| `ECS_CLUSTER_NAME` | this must match the value of your cluster (in AWS, go to **EC2 Container Service** -> **Clusters** to check the name) |
+| `DEFAULT_TARGET` | This is the `arn` (identifier) of the LoadBalancer group. You can find this in the "Output" Tab of the EcsClusterStack CloudFormation. |
+| `SERVICE_ROLE` | This is the name of an IAM role created for the services. The Jenkins Build needs it in order to create or update a Service. |
+
+1. If you are impatient, change the polling interval from `5` minutes to a figure you prefer:
+
+```groovy
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+``` 
+
+ * `pollSCM('* * * * *')` - polls every minute
 
 1. Commit and push your changes
 
@@ -60,12 +78,25 @@ Thereafter, it will poll for changes every 5 minutes.
 1. Go to AWS **EC2 Container Service**
 1. Click on **hello-world** to view the Cluster
 1. Click the **Tasks** Tab to see the pending tasks
-1. When the container has deployed, paste the Container Instance's public IP into a browser window to verify that you can see "Hello World".
+1. When the container has deployed, paste the **LoadBalancerUrl** 
+(you can get this from the **Outputs** tab in the CloudFormation Stack details for `EcsClusterStack`) into a 
+browser window to verify that you can see "Hello World".
 
 # Make an edit and push
-Make a modification (perhaps to the `src/main/java/com/simoncomputing/app/helloworld/controller/HomeController` file) and push. 
+Make a modification (for instance, change `Hello World` to something else 
+in `src/main/java/com/simoncomputing/app/helloworld/controller/HomeController` file) and push. 
 Wait up to 5 minutes for the Jenkins job to trigger.
 
+ >**Note:** You can click **Git Polling Log** in the Jenkins project to see when it last polled so you can make a guess
+ when it will next poll (polls every 5 minutes).
+
  * Try changing "`Hello World" to something else to verify the change gets deployed.
+ 
+1. Go to AWS **EC2 Container Service** and click on the cluster name `hello-world`
+1. Click on the service name `hello-world-service`
+1. Go to the **Events** tab
+  * If you see a message that the "service hello-world-service has begun draining connections on 1 tasks," try refreshing
+  your browser window to see the changes.
+  
 
 **Finally:** [Clean up](./cleanup.md) if you are done.

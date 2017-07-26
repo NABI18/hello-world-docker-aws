@@ -15,5 +15,9 @@ then click **Next**
   * Add a "Name" tag with value "Jenkins - hello-world"
 1. Click the acknowledgement checkbox, then click **Create**
 1. Wait for the stack to build. You can watch progress by clicking the **Events** tab in the detail pane.
+1. After the stack has completed, go to the **Resources** tab and look for **WebServerGroup** (click the link, which will open in a new window).
+This is the _Auto-Scaling Group_ for the Jenkins Server and will give us access to the EC2 Instance details.
+1. Go to the **Instances** tab in the details pane, then click on the **Instance ID** listed there (there should be only 1).
+1. Look for the **Public IP**. You'll be using that in the next step (as soon as the **Instance State** says "running").
 
 **Next:** [Give Jenkins Access to the GitHub Repository](05-JenkinsGitHub.md)
