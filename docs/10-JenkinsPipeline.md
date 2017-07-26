@@ -26,15 +26,23 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
         AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
+        
+        // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
+        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-east-1:487471999079:targetgroup/default/8eab6a3694cef2e2'
+        SERVICE_ROLE = 'ecs-service-EcsClusterStack'
     }
   ```
 
-1. **`REGISTRY_CREDENTIAL_ID`** matches the ID of the [Docker Credentials you created previously](./07-DockerCredentials.md)
-1. **`GIT_URL`** change to the **SSH** url for your project
-1. **`DOCKER_IMAGE_NAME`** change to the `namespace/hello-world-docker-aws` for your docker repository
-1. **`AWS_REGION`** change if needed
-1. **`DOCKER_REGISTRY`** For DockerHub, use `https://index.docker.io/v1/`
-1. **`ECS_CLUSTER_NAME`** this must match the value of your cluster (in AWS, go to **EC2 Container Service** | **Clusters** to check the name)
+| variable | description |
+| -------- | ----------- |
+| `REGISTRY_CREDENTIAL_ID` | matches the ID of the [Docker Credentials you created previously](./07-DockerCredentials.md) |
+| `GIT_URL` | change to the **SSH** url for your project |
+| `DOCKER_IMAGE_NAME` | change to the `namespace/hello-world-docker-aws` for your docker repository |
+| `AWS_REGION` | change if needed |
+| `DOCKER_REGISTRY` | For DockerHub, use `https://index.docker.io/v1/` |
+| `ECS_CLUSTER_NAME` | this must match the value of your cluster (in AWS, go to **EC2 Container Service** -> **Clusters** to check the name) |
+| `DEFAULT_TARGET` | This is the `arn` (identifier) of the LoadBalancer group. You can find this in the "Output" Tab of the EcsClusterStack CloudFormation. |
+| `SERVICE_ROLE` | This is the name of an IAM role created for the services. The Jenkins Build needs it in order to create or update a Service. | 
 
 1. Commit and push your changes
 
@@ -67,5 +75,7 @@ Make a modification (perhaps to the `src/main/java/com/simoncomputing/app/hellow
 Wait up to 5 minutes for the Jenkins job to trigger.
 
  * Try changing "`Hello World" to something else to verify the change gets deployed.
+ * If you don't see a change happening right away, check the status of the pending tasks in the EC2 Container Service **Clusters**.
+   * If you see that there are 2 running tasks, and that one is "draining," try opening a second browser window to see your change deployed.
 
 **Finally:** [Clean up](./cleanup.md) if you are done.
