@@ -16,8 +16,8 @@ pipeline {
         AWS_REGION = 'us-west-2'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
-        LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/9906552327c00177'
-        LB_IAM_ROLE = 'ecs-service-role'
+        LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/8eab6a3694cef2e2'
+        LB_IAM_ROLE = 'ecs-service-EcsClusterStack'
     }
 
     stages {
@@ -78,14 +78,6 @@ pipeline {
                       DESIRED_COUNT=`echo $SERVICES | jq .services[].desiredCount`
                       if [ ${DESIRED_COUNT} = "0" ]; then
                         DESIRED_COUNT="1"
-                      else
-                        echo "stopping current task definition..."
-                        aws ecs update-service \
-                          --cluster ${CLUSTER} \
-                          --region ${REGION} \
-                          --service ${SERVICE_NAME} \
-                          --desired-count 0
-                        sleep 30
                       fi
                       echo " == starting next revision == "
                       aws ecs update-service \

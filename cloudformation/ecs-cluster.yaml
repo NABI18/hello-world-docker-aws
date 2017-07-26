@@ -172,14 +172,12 @@ Resources:
       GatewayId: !Ref InternetGateway
 
   PubSubnet1RouteTableAssociation:
-    DependsOn: PublicRouteViaIgw
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PubSubnetAz1
       RouteTableId: !Ref RouteViaIgw
 
   PubSubnet2RouteTableAssociation:
-    DependsOn: PublicRouteViaIgw
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PubSubnetAz2
@@ -280,7 +278,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service:
-                - ecs.amazonaws.com
+                - ec2.amazonaws.com
             Action:
               - sts:AssumeRole
       ManagedPolicyArns:
