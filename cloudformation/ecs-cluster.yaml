@@ -61,6 +61,7 @@ Parameters:
   KeyName:
     Description: Required - Name of an existing EC2 KeyPair to enable SSH access to launched ECS instances
     Type: AWS::EC2::KeyPair::KeyName
+    Default: "hello-world-ecs"
 
   AsgMaxSize:
     Description: Maximum size and initial Desired Capacity of ECS Auto Scaling Group
