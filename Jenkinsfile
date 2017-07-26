@@ -12,12 +12,14 @@ pipeline {
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
-        DOCKER_IMAGE_NAME = 'brightgarden/hello-world-docker-aws'
-        AWS_REGION = 'us-west-2'
+        DOCKER_IMAGE_NAME = 'simoncomputing-public/hello-world-docker-aws'
+        AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
-        LB_TARGET_GROUP_ARN = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/8eab6a3694cef2e2'
-        LB_IAM_ROLE = 'ecs-service-EcsClusterStack'
+
+        // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
+        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-east-1:487471999079:targetgroup/default/8eab6a3694cef2e2'
+        SERVICE_ROLE = 'ecs-service-EcsClusterStack'
     }
 
     stages {
@@ -25,7 +27,7 @@ pipeline {
         stage('checkout') {
             steps {
                 deleteDir()
-                git branch: 'feature/add_alb',
+                git branch: 'master',
                         url: "${GIT_URL}"
             }
         }
@@ -91,7 +93,7 @@ pipeline {
                       ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
 
                       if [ "$ROLES" == "" ]; then
-                        echo "No matching roles. Make sure ${LB_IAM_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
+                        echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
                       fi
 
                       LB_ROLE=`echo $ROLES | jq -r .Arn`
@@ -102,7 +104,7 @@ pipeline {
                         --task-definition ${FAMILY} \
                         --cluster ${CLUSTER} \
                         --region ${REGION} \
-                        --load-balancers targetGroupArn=${LB_TARGET_GROUP_ARN},containerName=${NAME},containerPort=${PORT} \
+                        --load-balancers targetGroupArn=${DEFAULT_TARGET},containerName=${NAME},containerPort=${PORT} \
                         --role ${LB_ROLE}
                     fi
 
