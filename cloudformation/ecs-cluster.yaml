@@ -59,20 +59,8 @@ Parameters:
       - d2.8xlarge
 
   KeyName:
-    Description: Optional - Name of an existing EC2 KeyPair to enable SSH access to launched ECS instances
+    Description: Required - Name of an existing EC2 KeyPair to enable SSH access to launched ECS instances
     Type: AWS::EC2::KeyPair::KeyName
-    Default: ""
-
-  VpcId:
-    Description: Optional - VPC Id of existing VPC. Leave blank to have a new VPC created
-    Type: "String"
-    ConstraintDescription: VPC Id must begin with 'vpc-' or leave blank to have a new VPC created
-    AllowedPattern: ^(?:vpc-[0-9a-f]{8}|)$
-
-  SubnetIds:
-    Description: Optional - Comma separated list of two (2) existing VPC Subnet Ids where ECS instances will run.  Required if setting VpcId.
-    Type: CommaDelimitedList
-    Default: ""
 
   AsgMaxSize:
     Description: Maximum size and initial Desired Capacity of ECS Auto Scaling Group
@@ -80,24 +68,14 @@ Parameters:
     Default: 1
 
   SecurityGroup:
-    Description: Optional - Existing security group to associate the container instances. Creates one by default.
+    Description: Optional - Existing security group to associate the Load Balancer.
     Type: String
     Default: ""
 
   SourceCidr:
-    Description: Optional - CIDR/IP range for EcsPort - defaults to 0.0.0.0/0"
+    Description: Optional - CIDR/IP range for Load Balancer - defaults to 0.0.0.0/0"
     Type: String
     Default: 0.0.0.0/0
-
-  EcsPort:
-    Description: Optional - Security Group port to open on ECS instances - defaults to port 80
-    Type: String
-    Default: 80
-
-  VpcAvailabilityZones:
-    Description: Optional - Comma-delimited list of VPC availability zones in which to create subnets.  Required if setting VpcId.
-    Type: CommaDelimitedList
-    Default: ""
 
 Mappings:
 
@@ -139,25 +117,14 @@ Mappings:
 
 Conditions:
 
-  CreateVpcResources:
-    !Equals [ !Ref VpcId, "" ]
-
   CreateSecurityGroup:
     !Equals [ !Ref SecurityGroup, "" ]
 
-  CreateEC2LCWithKeyPair:
-    !Not [ !Equals [ !Ref KeyName, "" ] ]
-
-  CreateEC2LCWithoutKeyPair:
-    !Equals [ !Ref KeyName, "" ]
-
-  UseSpecifiedVpcAvailabilityZones:
-    !Not [ !Equals [ !Join [ "", !Ref VpcAvailabilityZones ], "" ] ]
-
 Resources:
 
+# VPC
+
   Vpc:
-    Condition: CreateVpcResources
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !FindInMap [ VpcCidrs, vpc, cidr ]
@@ -165,43 +132,39 @@ Resources:
       EnableDnsHostnames: true
 
   PubSubnetAz1:
-    Condition: CreateVpcResources
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref Vpc
       CidrBlock: !FindInMap [ VpcCidrs, pubsubnet1, cidr ]
       MapPublicIpOnLaunch: true
-      AvailabilityZone: !If [ UseSpecifiedVpcAvailabilityZones, !Select [ 0, !Ref VpcAvailabilityZones ], !Select [ 0, !GetAZs ] ]
+      AvailabilityZone: !Select [ 0, !GetAZs ]
 
   PubSubnetAz2:
-    Condition: CreateVpcResources
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref Vpc
       CidrBlock: !FindInMap [ VpcCidrs, pubsubnet2, cidr ]
       MapPublicIpOnLaunch: true
-      AvailabilityZone: !If [ UseSpecifiedVpcAvailabilityZones, !Select [ 1, !Ref VpcAvailabilityZones ], !Select [ 1, !GetAZs ] ]
+      AvailabilityZone: !Select [ 1, !GetAZs ]
 
   InternetGateway:
-    Condition: CreateVpcResources
+    DependsOn: Vpc
     Type: AWS::EC2::InternetGateway
 
   AttachGateway:
-    Condition: CreateVpcResources
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
 
   RouteViaIgw:
-    Condition: CreateVpcResources
+    DependsOn: AttachGateway
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref Vpc
 
   PublicRouteViaIgw:
-    Condition: CreateVpcResources
-    DependsOn: AttachGateway
+    DependsOn: RouteViaIgw
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref RouteViaIgw
@@ -209,36 +172,88 @@ Resources:
       GatewayId: !Ref InternetGateway
 
   PubSubnet1RouteTableAssociation:
-    Condition: CreateVpcResources
+    DependsOn: PublicRouteViaIgw
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PubSubnetAz1
       RouteTableId: !Ref RouteViaIgw
 
-  PubSubnet1RouteTableAssociation:
-    Condition: CreateVpcResources
+  PubSubnet2RouteTableAssociation:
+    DependsOn: PublicRouteViaIgw
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PubSubnetAz2
       RouteTableId: !Ref RouteViaIgw
 
-  EcsClusterResource:
-    Type: AWS::ECS::Cluster
+## Security Groups
+
+  LoadBalancerSecurityGroup:
+    Condition: CreateSecurityGroup
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      ClusterName: !Ref EcsCluster
+      GroupDescription: Port 80 for HTTP ECS Access
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          CidrIp: !Ref SourceCidr
+          FromPort: 80
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: !Sub ${EcsCluster}-LoadBalancers
 
   EcsSecurityGroup:
     Condition: CreateSecurityGroup
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ECS Allowed Ports
-      VpcId: !If [ CreateVpcResources, !Ref Vpc, !Ref VpcId ]
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
-        - IpProtocol: tcp
-          CidrIp: !Ref SourceCidr
-          FromPort: !Ref EcsPort
-          ToPort: !Ref EcsPort
+        # Only allow inbound access to ECS from the ELB
+        - IpProtocol: -1
           SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${EcsCluster}-ECS-Hosts
+
+## Load Balancer
+
+  LoadBalancer:
+    DependsOn: AttachGateway
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub ${AWS::StackName}
+      Subnets: [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ]
+      SecurityGroups:
+        - !If [ CreateSecurityGroup, !Ref LoadBalancerSecurityGroup, !Ref SecurityGroup ]
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}
+
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DefaultTargetGroup
+
+  DefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: default
+      VpcId: !Ref Vpc
+      Port: 80
+      Protocol: HTTP
+
+## ECS Cluster
+
+  EcsClusterResource:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref EcsCluster
 
   ServiceRolePolicy:
     Type: AWS::IAM::Role
@@ -265,7 +280,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service:
-                - ecc.amazonaws.com
+                - ecs.amazonaws.com
             Action:
               - sts:AssumeRole
       ManagedPolicyArns:
@@ -280,7 +295,6 @@ Resources:
         - !Ref EcsInstancePolicy
 
   EcsInstanceLc:
-    Condition: CreateEC2LCWithKeyPair
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: !FindInMap [ AWSRegionToAMI, !Ref "AWS::Region", AMI ]
@@ -297,27 +311,12 @@ Resources:
             echo ECS_CLUSTER=${EcsCluster} >> /etc/ecs/ecs.config
 
 
-  EcsInstanceLcWithoutKeyPair:
-    Condition: CreateEC2LCWithoutKeyPair
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: !FindInMap [ AWSRegionToAMI, !Ref "AWS::Region", AMI ]
-      InstanceType: !Ref EcsInstanceType
-      AssociatePublicIpAddress: true
-      IamInstanceProfile: !Ref EcsInstanceProfile
-      SecurityGroups:
-        - !If [ CreateSecurityGroup, !Ref EcsSecurityGroup, !Ref SecurityGroup ]
-      UserData:
-        Fn::Base64: !Sub |
-            #!/bin/bash
-            echo ECS_CLUSTER=${EcsCluster} >> /etc/ecs/ecs.config
-
-
   EcsInstanceAsg:
+    DependsOn: AttachGateway
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      VPCZoneIdentifier: !If [ CreateVpcResources, [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ], !Ref SubnetIds ]
-      LaunchConfigurationName: !If [ CreateEC2LCWithKeyPair, !Ref EcsInstanceLc, !Ref EcsInstanceLcWithoutKeyPair ]
+      VPCZoneIdentifier: [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ]
+      LaunchConfigurationName: !Ref EcsInstanceLc
       MinSize: 1
       MaxSize: !Ref AsgMaxSize
       DesiredCapacity: !Ref AsgMaxSize
@@ -325,47 +324,6 @@ Resources:
         - Key: Name
           Value: !Sub ECS Instance - ${AWS::StackName}
           PropagateAtLaunch: true
-
-  LoadBalancerSecurityGroup:
-    Condition: CreateSecurityGroup
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Port 80 for HTTP ECS Access
-      VpcId: !If [ CreateVpcResources, !Ref Vpc, !Ref VpcId ]
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          CidrIp: 0.0.0.0/0
-          FromPort: 80
-          ToPort: 80
-
-  LoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: !Sub ${AWS::StackName}
-      Subnets: !If [ CreateVpcResources, [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ], !Ref SubnetIds ]
-      SecurityGroups:
-        - LoadBalancerSecurityGroup
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}
-
-  LoadBalancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      LoadBalancerArn: !Ref LoadBalancer
-      Port: 80
-      Protocol: HTTP
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref DefaultTargetGroup
-
-  DefaultTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: default
-      VpcId: !Ref Vpc
-      Port: 80
-      Protocol: HTTP
 
 Outputs:
 
