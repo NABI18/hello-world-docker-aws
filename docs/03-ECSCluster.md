@@ -12,7 +12,7 @@ and want to ensure you are removing all resources without impacting existing one
 pick `{project_dir}/cloudformation/vpc.yml`,
 then click **Next**
 1. Fill in the parameters (defaults are fine unless you stood up a VPC with this template using defaults already)
-    * **Stack name:** "`VPC Stack`"
+    * **Stack name:** "`VpcStack`"
 1. Click **Next**
     * Add a Tag: `Name` | `hello-world vpc`
 1. Click **Next** after adding tags or notifications (if you like)

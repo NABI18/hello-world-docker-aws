@@ -17,6 +17,7 @@ Jenkins for deploying to AWS while we are trying to shut things down.
 
 ## Delete stacks
 Go to **CloudFormation** and delete the `Jenkins` stack first, then when that completes, delete the `EcsClusterStack`.
+Delete the `VpcStack` last (if you created it).
 
 You can watch the resources being deleted from the **Resources** tab.
 
