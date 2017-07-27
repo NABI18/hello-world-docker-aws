@@ -3,9 +3,58 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description:
 
   AWS CloudFormation template to create resources required to run tasks on an ECS cluster,
-  using the 2017.03 amazon-ecs-optimized AMI
+  using the 2017.03 amazon-ecs-optimized AMI.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Cluster"
+        Parameters:
+          - EcsCluster
+      -
+        Label:
+          default: "Network Configuration"
+        Parameters:
+          - VpcId
+          - Subnets
+          - SecurityGroup
+      -
+        Label:
+          default: "Amazon EC2 Configuration"
+        Parameters:
+          - EcsInstanceType
+          - KeyName
+
+      -
+        Label:
+          default: "Auto-scaling and Load Balancer"
+        Parameters:
+          - AsgMaxSize
+          - SourceCidr
+    ParameterLabels:
+      Subnets:
+        default: "Subnets in the same CIDR as the VPC above"
+      AsgMaxSize:
+        default: "Maximum Initial Capacity"
+      SourceCidr:
+        default: "Inbound Source CIDR for Load Balancer"
 
 Parameters:
+
+  VpcId:
+    Description: The VPC to deploy this cluster stack.
+    Type: AWS::EC2::VPC::Id
+
+  Subnets:
+    Description: Choose Subnets in the VPC to deploy instances to.
+    Type: List<AWS::EC2::Subnet::Id>
+
+  SecurityGroup:
+    Description: Optional - Existing security group to associate the Load Balancer.
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: ""
 
   EcsCluster:
     Description: ECS Cluster Name
@@ -68,11 +117,6 @@ Parameters:
     Type: Number
     Default: 1
 
-  SecurityGroup:
-    Description: Optional - Existing security group to associate the Load Balancer.
-    Type: String
-    Default: ""
-
   SourceCidr:
     Description: Optional - CIDR/IP range for Load Balancer - defaults to 0.0.0.0/0"
     Type: String
@@ -108,81 +152,12 @@ Mappings:
     ap-southeast-2:
       AMI: ami-42e9f921
 
-  VpcCidrs:
-    vpc:
-      cidr: 10.0.0.0/16
-    pubsubnet1:
-      cidr: 10.0.0.0/24
-    pubsubnet2:
-      cidr: 10.0.1.0/24
-
 Conditions:
 
   CreateSecurityGroup:
     !Equals [ !Ref SecurityGroup, "" ]
 
 Resources:
-
-# VPC
-
-  Vpc:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !FindInMap [ VpcCidrs, vpc, cidr ]
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-
-  PubSubnetAz1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref Vpc
-      CidrBlock: !FindInMap [ VpcCidrs, pubsubnet1, cidr ]
-      MapPublicIpOnLaunch: true
-      AvailabilityZone: !Select [ 0, !GetAZs ]
-
-  PubSubnetAz2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref Vpc
-      CidrBlock: !FindInMap [ VpcCidrs, pubsubnet2, cidr ]
-      MapPublicIpOnLaunch: true
-      AvailabilityZone: !Select [ 1, !GetAZs ]
-
-  InternetGateway:
-    DependsOn: Vpc
-    Type: AWS::EC2::InternetGateway
-
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref Vpc
-      InternetGatewayId: !Ref InternetGateway
-
-  RouteViaIgw:
-    DependsOn: AttachGateway
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref Vpc
-
-  PublicRouteViaIgw:
-    DependsOn: RouteViaIgw
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref RouteViaIgw
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-  PubSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PubSubnetAz1
-      RouteTableId: !Ref RouteViaIgw
-
-  PubSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PubSubnetAz2
-      RouteTableId: !Ref RouteViaIgw
 
 ## Security Groups
 
@@ -191,7 +166,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Port 80 for HTTP ECS Access
-      VpcId: !Ref Vpc
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: -1
           CidrIp: !Ref SourceCidr
@@ -206,7 +181,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ECS Allowed Ports
-      VpcId: !Ref Vpc
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         # Only allow inbound access to ECS from the ELB
         - IpProtocol: -1
@@ -218,11 +193,10 @@ Resources:
 ## Load Balancer
 
   LoadBalancer:
-    DependsOn: AttachGateway
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: !Sub ${AWS::StackName}
-      Subnets: [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ]
+      Subnets: !Ref Subnets
       SecurityGroups:
         - !If [ CreateSecurityGroup, !Ref LoadBalancerSecurityGroup, !Ref SecurityGroup ]
       Tags:
@@ -243,7 +217,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: default
-      VpcId: !Ref Vpc
+      VpcId: !Ref VpcId
       Port: 80
       Protocol: HTTP
 
@@ -311,10 +285,10 @@ Resources:
 
 
   EcsInstanceAsg:
-    DependsOn: AttachGateway
+    DependsOn: LoadBalancerListener
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      VPCZoneIdentifier: [ !Ref PubSubnetAz1, !Ref PubSubnetAz2 ]
+      VPCZoneIdentifier: !Ref Subnets
       LaunchConfigurationName: !Ref EcsInstanceLc
       MinSize: 1
       MaxSize: !Ref AsgMaxSize
@@ -326,53 +300,9 @@ Resources:
 
 Outputs:
 
-  VpcId:
-    Description: The VPC ID of the VPC
-    Value: !Ref Vpc
-    Export:
-      Name: !Sub ${AWS::StackName}-VPCID
-
-  KeyName:
-    Description: The name of SSH key
-    Value: !Ref KeyName
-    Export:
-      Name: !Sub ${AWS::StackName}-KeyName
-
-  SubnetA:
-    Description: The ID of subnet A
-    Value: !Ref PubSubnetAz1
-    Export:
-      Name: !Sub ${AWS::StackName}-SubnetA
-
-  SubnetB:
-    Description: The ID of subnet B
-    Value: !Ref PubSubnetAz2
-    Export:
-      Name: !Sub ${AWS::StackName}-SubnetB
-
-  AvailabilityZone1:
-    Description: Availability Zone 1
-    Value: !GetAtt [ PubSubnetAz1, AvailabilityZone ]
-    Export:
-      Name: !Sub ${AWS::StackName}-AZ1
-
-  AvailabilityZone2:
-    Description: Availability Zone 2
-    Value: !GetAtt [ PubSubnetAz2, AvailabilityZone ]
-    Export:
-      Name: !Sub ${AWS::StackName}-AZ2
-
-  LoadBalancer:
-    Description: A reference to the Application Load Balancer
-    Value: !Ref LoadBalancer
-
   LoadBalancerUrl:
     Description: The URL of the ALB
     Value: !GetAtt LoadBalancer.DNSName
-
-  Listener:
-    Description: A reference to a port 80 listener
-    Value: !Ref LoadBalancerListener
 
   DefaultTarget:
     Description: The Target Group for the ALB

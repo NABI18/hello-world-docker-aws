@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+
+  AWS CloudFormation template to create a new vpc
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Network IP Ranges"
+        Parameters:
+          - VpcCidr
+          - Subnet1Cidr
+          - Subnet2Cidr
+    ParameterLabels:
+      VpcCidr:
+        default: "VPC"
+      Subnet1Cidr:
+        default: "Subnet 1"
+      Subnet2Cidr:
+        default: "Subnet 2"
+
+Parameters:
+
+  VpcCidr:
+    Description: Optional - CIDR/IP range for VPC - defaults to 10.192.0.0/16
+    Type: String
+    Default: 10.192.0.0/16
+
+  Subnet1Cidr:
+    Description: Optional - CIDR/IP range for Subnet1 - defaults to 10.192.10.0/24
+    Type: String
+    Default: 10.192.10.0/24
+
+  Subnet2Cidr:
+    Description: Optional - CIDR/IP range for Subnet1 - defaults to 10.192.11.0/24
+    Type: String
+    Default: 10.192.11.0/24
+
+Resources:
+
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  PubSubnetAz1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: !Ref Subnet1Cidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+
+  PubSubnetAz2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: !Ref Subnet2Cidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+
+  InternetGateway:
+    DependsOn: Vpc
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  RouteViaIgw:
+    DependsOn: AttachGateway
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  PublicRouteViaIgw:
+    DependsOn: RouteViaIgw
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteViaIgw
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PubSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PubSubnetAz1
+      RouteTableId: !Ref RouteViaIgw
+
+  PubSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PubSubnetAz2
+      RouteTableId: !Ref RouteViaIgw
+
+Outputs:
+
+  VpcId:
+    Description: The VPC ID of the VPC
+    Value: !Ref Vpc
+    Export:
+      Name: !Sub ${AWS::StackName}-VPCID
+
+  SubnetA:
+    Description: The ID of subnet A
+    Value: !Ref PubSubnetAz1
+    Export:
+      Name: !Sub ${AWS::StackName}-SubnetA
+
+  SubnetB:
+    Description: The ID of subnet B
+    Value: !Ref PubSubnetAz2
+    Export:
+      Name: !Sub ${AWS::StackName}-SubnetB
+
+  AvailabilityZone1:
+    Description: Availability Zone 1
+    Value: !GetAtt [ PubSubnetAz1, AvailabilityZone ]
+    Export:
+      Name: !Sub ${AWS::StackName}-AZ1
+
+  AvailabilityZone2:
+    Description: Availability Zone 2
+    Value: !GetAtt [ PubSubnetAz2, AvailabilityZone ]
+    Export:
+      Name: !Sub ${AWS::StackName}-AZ2
+
+  RouteTable:
+    Description: The route table for the VPC
+    Value: !Ref RouteViaIgw

@@ -27,7 +27,6 @@ Only the following regions are supported by this project's CloudFormation templa
 | ap-northeast-1 | Asia Pacific (Tokyo) |
 | ap-southeast-1 | Asia Pacific (Singapore) |
 | ap-southeast-2 | Asia Pacific (Syndey) |
-| sa-east-1 | South America (São Paulo) |
 
 1. Log into AWS if you haven't already, click on the **Services** drop down in the menu, and go to **EC2**.
 1. Pick your region using the drop down in the top nav bar.
