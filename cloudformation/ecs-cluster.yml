@@ -53,7 +53,7 @@ Parameters:
 
   SecurityGroup:
     Description: Optional - Existing security group to associate the Load Balancer.
-    Type: AWS::EC2::SecurityGroup::Id
+    Type: String
     Default: ""
 
   EcsCluster:
