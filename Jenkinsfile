@@ -77,22 +77,24 @@ pipeline {
 
         stage('deploy to ecs') {
             steps {
-                sh '''#!/bin/sh -e
-                    echo "[${LB_ROLE}]"
-                    echo $LB_ROLE
+                script {
+                    sh '''#!/bin/sh -e
+                        echo "[${LB_ROLE}]"
+                        echo $LB_ROLE
 
-                    echo " === Configuring ecs-cli ==="
-                    /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
+                        echo " === Configuring ecs-cli ==="
+                        /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
-                    echo " === Create/Update Service === "
-                    /usr/local/bin/ecs-cli compose service up \
-                    --deployment-min-healthy-percent 0 \
-                    --target-group-arn ${DEFAULT_TARGET} \
-                    --container-name hello-world \
-                    --container-port 8080 \
-                    --role ${LB_ROLE}
+                        echo " === Create/Update Service === "
+                        /usr/local/bin/ecs-cli compose service up \
+                        --deployment-min-healthy-percent 0 \
+                        --target-group-arn ${DEFAULT_TARGET} \
+                        --container-name hello-world \
+                        --container-port 8080 \
+                        --role ${LB_ROLE}
 
-                ''' // end shell script
+                    ''' // end shell script
+                }
             }
         }
     }
