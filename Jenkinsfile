@@ -53,6 +53,9 @@ pipeline {
                         ''' // end shell script
                     )
                 }
+                echo DOCKER_IMAGE_NAME
+                echo "[$DOCKER_IMAGE_NAME]"
+                echo "[${DOCKER_IMAGE_NAME}]"
             }
         }
 
