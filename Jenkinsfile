@@ -39,9 +39,9 @@ pipeline {
                         script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.hello_world.image'
                     ).trim()
                     DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
+                    sh 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\"${DOCKER_IMAGE_AND_TAG}\\"'
+                    sh 'cat docker-compose.yml'
                 }
-                sh 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image "$DOCKER_IMAGE_AND_TAG"'
-                sh 'cat docker-compose.yml'
             }
         }
 
