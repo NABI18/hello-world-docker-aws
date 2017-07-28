@@ -33,24 +33,26 @@ pipeline {
 
         stage('prepare environment') {
             steps {
-                DOCKER_IMAGE_NAME = sh(
-                    returnStdout: true,
-                    script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
-                )
-                LB_ROLE = sh(
-                    returnStdout: true,
-                    script: '''#!/bin/sh -e
-                        echo " == get role arn == "
-                        ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
+                script {
+                    DOCKER_IMAGE_NAME = sh(
+                        returnStdout: true,
+                        script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
+                    )
+                    LB_ROLE = sh(
+                        returnStdout: true,
+                        script: '''#!/bin/sh -e
+                            echo " == get role arn == "
+                            ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
 
-                        if [ "$ROLES" == "" ]; then
-                          echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
-                          exit -1
-                        fi
+                            if [ "$ROLES" == "" ]; then
+                              echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
+                              exit -1
+                            fi
 
-                        echo $ROLES | jq -r .Arn
-                    ''' // end shell script
-                )
+                            echo $ROLES | jq -r .Arn
+                        ''' // end shell script
+                    )
+                }
             }
         }
 
