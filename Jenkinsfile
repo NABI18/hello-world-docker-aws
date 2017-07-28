@@ -79,10 +79,10 @@ pipeline {
                 sh '''#!/bin/sh -e
 
                     echo " === Configuring ecs-cli ==="
-                    ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
+                    /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
                     echo " === Create/Update Service === "
-                    ecs-cli compose service up \
+                    /usr/local/bin/ecs-cli compose service up \
                     --deployment-min-healthy-percent 0 \
                     --target-group-arn ${DEFAULT_TARGET} \
                     --container-name hello-world \
