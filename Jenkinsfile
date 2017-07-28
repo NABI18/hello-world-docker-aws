@@ -38,7 +38,10 @@ pipeline {
                         returnStdout: true,
                         script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.hello_world.image'
                     ).trim()
+                    DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
                 }
+                sh 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set ".services.hello_world.image" \"${DOCKER_IMAGE_AND_TAG}\"'
+                sh 'cat docker-compose.yml'
             }
         }
 
@@ -53,7 +56,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${DOCKER_REGISTRY}", "${REGISTRY_CREDENTIAL_ID}") {
-                        container = docker.build("${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}")
+                        container = docker.build("${DOCKER_IMAGE_AND_TAG}")
                         container.push()
                     }
                 }
