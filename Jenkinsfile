@@ -78,6 +78,7 @@ pipeline {
         stage('deploy to ecs') {
             steps {
                 sh '''#!/bin/sh -e
+                    echo "[${LB_ROLE}]"
                     echo $LB_ROLE
 
                     echo " === Configuring ecs-cli ==="
