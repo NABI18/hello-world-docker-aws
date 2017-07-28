@@ -78,7 +78,11 @@ pipeline {
 
         stage('deploy to ecs') {
             steps {
+                echo "checking outside"
+                echo "[${LB_ROLE}]"
+                echo $LB_ROLE
                 sh '''#!/bin/sh -e
+                    echo "checking inside"
                     echo "[${LB_ROLE}]"
                     echo $LB_ROLE
 
