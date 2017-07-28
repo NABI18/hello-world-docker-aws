@@ -26,7 +26,7 @@ pipeline {
         stage('checkout') {
             steps {
                 deleteDir()
-                git branch: 'feature/feature_dockercompose',
+                git branch: 'master',
                         url: "${GIT_URL}"
             }
         }
