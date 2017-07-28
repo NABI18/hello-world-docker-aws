@@ -36,7 +36,7 @@ pipeline {
                 script {
                     DOCKER_IMAGE_NAME = sh(
                         returnStdout: true,
-                        script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.hello-world.image'
+                        script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.hello_world.image'
                     ).trim()
                 }
             }
