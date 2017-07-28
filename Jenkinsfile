@@ -44,17 +44,10 @@ pipeline {
                     DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
                     echo "[${DOCKER_IMAGE_AND_TAG}]"
 
-                    shell_cmd = "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\""
-                    UPDATED_DOCKER_COMPOSE = sh(
-                        returnStdout: true,
-                        script: shell_cmd
-                    ).trim()
-
-                    echo UPDATED_DOCKER_COMPOSE
-                    shell_cmd = "echo ${UPDATED_DOCKER_COMPOSE} > docker-compose.yml"
-
+                    sh "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\" > upd-docker-compose.yml"
+                   
                     sh shell_cmd
-                    sh 'cat docker-compse.yml'
+                    sh 'cat upd-docker-compse.yml'
 
                     echo "  end debug 1"
                     sh 'exit -1'
