@@ -38,7 +38,7 @@ pipeline {
                     script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
                 )
                 LB_ROLE = sh(
-                    returnStdout: true
+                    returnStdout: true,
                     script: ```#!/bin/sh -e
                         echo " == get role arn == "
                         ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
