@@ -71,33 +71,30 @@ pipeline {
                         container.push()
                     }
                 }
-                echo "checking lb role again"
-                echo "[$LB_ROLE]"
             }
         }
 
         stage('deploy to ecs') {
             steps {
-                echo "checking outside"
-                echo "[${LB_ROLE}]"
-                echo $LB_ROLE
-                sh '''#!/bin/sh -e
-                    echo "checking inside"
-                    echo "[${LB_ROLE}]"
-                    echo $LB_ROLE
+                withEnv(["LB_ROLE=${LB_ROLE}"]) {
+                    sh '''#!/bin/sh -e
+                        echo "checking inside"
+                        echo "[${LB_ROLE}]"
+                        echo $LB_ROLE
 
-                    echo " === Configuring ecs-cli ==="
-                    /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
+                        echo " === Configuring ecs-cli ==="
+                        /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
-                    echo " === Create/Update Service === "
-                    /usr/local/bin/ecs-cli compose service up \
-                    --deployment-min-healthy-percent 0 \
-                    --target-group-arn ${DEFAULT_TARGET} \
-                    --container-name hello-world \
-                    --container-port 8080 \
-                    --role ${LB_ROLE}
+                        echo " === Create/Update Service === "
+                        /usr/local/bin/ecs-cli compose service up \
+                        --deployment-min-healthy-percent 0 \
+                        --target-group-arn ${DEFAULT_TARGET} \
+                        --container-name hello-world \
+                        --container-port 8080 \
+                        --role ${LB_ROLE}
 
-                ''' // end shell script
+                    ''' // end shell script
+                }
             }
         }
     }
