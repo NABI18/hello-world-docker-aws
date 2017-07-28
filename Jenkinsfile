@@ -19,6 +19,7 @@ pipeline {
         // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
         DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/3333deca3d9fa2e3'
         SERVICE_ROLE = 'ecs-service-EcsClusterStack'
+        LB_ROLE = '' // leave blank
     }
 
     stages {
@@ -77,24 +78,22 @@ pipeline {
 
         stage('deploy to ecs') {
             steps {
-                script {
-                    sh '''#!/bin/sh -e
-                        echo "[${LB_ROLE}]"
-                        echo $LB_ROLE
+                sh '''#!/bin/sh -e
+                    echo "[${LB_ROLE}]"
+                    echo $LB_ROLE
 
-                        echo " === Configuring ecs-cli ==="
-                        /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
+                    echo " === Configuring ecs-cli ==="
+                    /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
-                        echo " === Create/Update Service === "
-                        /usr/local/bin/ecs-cli compose service up \
-                        --deployment-min-healthy-percent 0 \
-                        --target-group-arn ${DEFAULT_TARGET} \
-                        --container-name hello-world \
-                        --container-port 8080 \
-                        --role ${LB_ROLE}
+                    echo " === Create/Update Service === "
+                    /usr/local/bin/ecs-cli compose service up \
+                    --deployment-min-healthy-percent 0 \
+                    --target-group-arn ${DEFAULT_TARGET} \
+                    --container-name hello-world \
+                    --container-port 8080 \
+                    --role ${LB_ROLE}
 
-                    ''' // end shell script
-                }
+                ''' // end shell script
             }
         }
     }
