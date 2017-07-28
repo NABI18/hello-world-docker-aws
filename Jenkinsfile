@@ -42,7 +42,7 @@ pipeline {
                     echo "[${DOCKER_IMAGE_NAME}]"
                     DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
                     echo "[${DOCKER_IMAGE_AND_TAG}]"
-                    shell_cmd = "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\""
+                    shell_cmd = "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\" > docker-compose.yml"
                     sh shell_cmd
                     sh 'cat docker-compose.yml'
                     echo "  end debug 1"
