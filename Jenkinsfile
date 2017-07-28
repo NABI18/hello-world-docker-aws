@@ -52,8 +52,6 @@ pipeline {
                         ''' // end shell script
                     ).trim()
                 }
-                echo "checking lb role"
-                echo "[$LB_ROLE]"
             }
         }
 
@@ -71,9 +69,9 @@ pipeline {
                         container = docker.build("${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}")
                         container.push()
                     }
+                }
                 echo "checking lb role again"
                 echo "[$LB_ROLE]"
-                }
             }
         }
 
