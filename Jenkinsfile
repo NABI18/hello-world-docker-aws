@@ -41,7 +41,6 @@ pipeline {
                     LB_ROLE = sh(
                         returnStdout: true,
                         script: '''#!/bin/sh -e
-                            echo " == get role arn == "
                             ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
 
                             if [ "$ROLES" == "" ]; then
@@ -53,6 +52,8 @@ pipeline {
                         ''' // end shell script
                     ).trim()
                 }
+                echo "checking lb role"
+                echo "[$LB_ROLE]"
             }
         }
 
@@ -70,6 +71,8 @@ pipeline {
                         container = docker.build("${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}")
                         container.push()
                     }
+                echo "checking lb role again"
+                echo "[$LB_ROLE]"
                 }
             }
         }
