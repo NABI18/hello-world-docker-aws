@@ -39,7 +39,7 @@ pipeline {
                 )
                 LB_ROLE = sh(
                     returnStdout: true,
-                    script: ```#!/bin/sh -e
+                    script: '''#!/bin/sh -e
                         echo " == get role arn == "
                         ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
 
@@ -49,7 +49,7 @@ pipeline {
                         fi
 
                         echo $ROLES | jq -r .Arn
-                    ``` // end shell script
+                    ''' // end shell script
                 )
             }
         }
