@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('* * * * *')
+        pollSCM('H/5 * * * *')
     }
 
     tools {
@@ -12,12 +12,12 @@ pipeline {
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
-        AWS_REGION = 'us-west-2'
+        AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
 
         // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
-        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/3333deca3d9fa2e3'
+        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-east-1:487471999079:targetgroup/default/8eab6a3694cef2e2'
         SERVICE_ROLE = 'ecs-service-EcsClusterStack'
     }
 
@@ -41,6 +41,7 @@ pipeline {
 
                     DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
 
+                    echo " === updating tag in docker-compose.yml === "
                     sh "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\" | tee upd-docker-compose.yml"
                 }
             }

@@ -3,7 +3,7 @@ version: '2'
 
 services:
   hello_world:
-    image: brightgarden/hello-world-docker-aws
+    image: simoncomputing-public/hello-world-docker-aws
     cpu_shares: 10
     mem_limit: 268435456
     ports:
