@@ -19,7 +19,6 @@ pipeline {
         // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
         DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/3333deca3d9fa2e3'
         SERVICE_ROLE = 'ecs-service-EcsClusterStack'
-        LB_ROLE = '' // leave blank
     }
 
     stages {
@@ -38,19 +37,6 @@ pipeline {
                     DOCKER_IMAGE_NAME = sh(
                         returnStdout: true,
                         script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
-                    ).trim()
-                    LB_ROLE = sh(
-                        returnStdout: true,
-                        script: '''#!/bin/sh -e
-                            ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
-
-                            if [ "$ROLES" == "" ]; then
-                              echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
-                              exit -1
-                            fi
-
-                            echo $ROLES | jq -r .Arn
-                        ''' // end shell script
                     ).trim()
                 }
             }
@@ -76,25 +62,20 @@ pipeline {
 
         stage('deploy to ecs') {
             steps {
-                withEnv(["LB_ROLE=${LB_ROLE}"]) {
-                    sh '''#!/bin/sh -e
-                        echo "checking inside"
-                        echo "[${ECS_CLUSTER_NAME}]"
-                        echo $ECS_CLUSTER_NAME
+                sh '''#!/bin/sh -e
 
-                        echo " === Configuring ecs-cli ==="
-                        /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
+                    echo " === Configuring ecs-cli ==="
+                    /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
-                        echo " === Create/Update Service === "
-                        /usr/local/bin/ecs-cli compose service up \
-                        --deployment-min-healthy-percent 0 \
-                        --target-group-arn ${DEFAULT_TARGET} \
-                        --container-name hello-world \
-                        --container-port 8080 \
-                        --role ${LB_ROLE}
+                    echo " === Create/Update Service === "
+                    /usr/local/bin/ecs-cli compose service up \
+                    --deployment-min-healthy-percent 0 \
+                    --target-group-arn ${DEFAULT_TARGET} \
+                    --container-name hello-world \
+                    --container-port 8080 \
+                    --role ${SERVICE_ROLE}
 
-                    ''' // end shell script
-                }
+                ''' // end shell script
             }
         }
     }
