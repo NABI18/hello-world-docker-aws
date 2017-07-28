@@ -2,7 +2,7 @@
 version: '2'
 
 services:
-  hello-world:
+  hello_world:
     image: brightgarden/hello-world-docker-aws
     cpu_shares: 100
     mem_limit: 268435456

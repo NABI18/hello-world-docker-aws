@@ -71,7 +71,7 @@ pipeline {
                     /usr/local/bin/ecs-cli compose service up \
                     --deployment-min-healthy-percent 0 \
                     --target-group-arn ${DEFAULT_TARGET} \
-                    --container-name hello-world \
+                    --container-name hello_world \
                     --container-port 8080 \
                     --role ${SERVICE_ROLE}
 
