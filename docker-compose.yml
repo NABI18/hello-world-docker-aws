@@ -1,0 +1,10 @@
+
+version: '2'
+
+services:
+  web:
+    image: brightgarden/hello-world-docker-aws
+    cpu_shares: 100
+    mem_limit: 268435456
+    ports:
+      - 8080

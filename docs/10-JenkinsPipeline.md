@@ -53,6 +53,27 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
 ``` 
 
  * `pollSCM('* * * * *')` - polls every minute
+ 
+# Modify the docker-compose.yml file for your image repository
+Let's change the `docker-compose.yml` file so the image it points to will be from your DockerHub repository.
+
+1. Open `docker-compose.yml` in an editor
+```yaml
+
+version: '2'
+
+services:
+  web:
+    image: simoncomputing-public/hello-world-docker-aws
+    cpu_shares: 100
+    mem_limit: 268435456
+    ports:
+      - 8080
+```
+
+1. Change `simoncomputing-public/hello-world-docker-aws` to your DockerHub image repository name
+ 
+# Push your changes
 
 1. Commit and push your changes
 
