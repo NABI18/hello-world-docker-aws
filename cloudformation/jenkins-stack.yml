@@ -437,6 +437,10 @@ Resources:
             # Update the AWS CLI to the latest version
             yum update -y aws-cli
 
+            # Install ECS CLI
+            curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest
+            chmod a+x /usr/local/bin/ecs-cli
+
             # Wait 30 seconds to allow Jenkins to startup
             echo "Waiting 30 seconds for Jenkins to start....."
             sleep 30

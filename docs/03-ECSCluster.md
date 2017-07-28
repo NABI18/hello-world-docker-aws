@@ -7,7 +7,7 @@ For this task, we'll use a **CloudFormation** Template to quickly stand up a **S
 To isolate your work, you can create your own VPC. This is ideal if you intend to do a complete tear-down at the end 
 and want to ensure you are removing all resources without impacting existing ones.
 
-1. In AWS, use the **Services* dropdown to go to **CLoudFormation** | **Create Stack**
+1. In AWS, use the **Services** dropdown to go to **CLoudFormation** | **Create Stack**
 1. **Upload a template to Amazon S3** then **choose file** and go to your clone directory, 
 pick `{project_dir}/cloudformation/vpc.yml`,
 then click **Next**
