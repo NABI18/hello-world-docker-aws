@@ -12,7 +12,6 @@ pipeline {
     environment {
         REGISTRY_CREDENTIAL_ID = 'DOCKER_REGISTRY_CREDENTIALS'
         GIT_URL = 'git@github.com:simoncomputing/hello-world-docker-aws.git'
-        DOCKER_IMAGE_NAME = 'simoncomputing-public/hello-world-docker-aws'
         AWS_REGION = 'us-east-1'
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         ECS_CLUSTER_NAME = 'hello-world'
@@ -29,6 +28,29 @@ pipeline {
                 deleteDir()
                 git branch: 'feature/feature_dockercompose',
                         url: "${GIT_URL}"
+            }
+        }
+
+        stage('prepare environment') {
+            steps {
+                DOCKER_IMAGE_NAME = sh(
+                    returnStdout: true,
+                    script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
+                )
+                LB_ROLE = sh(
+                    returnStdout: true
+                    script: ```#!/bin/sh -e
+                        echo " == get role arn == "
+                        ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
+
+                        if [ "$ROLES" == "" ]; then
+                          echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
+                          exit -1
+                        fi
+
+                        echo $ROLES | jq -r .Arn
+                    ``` // end shell script
+                )
             }
         }
 
@@ -53,16 +75,6 @@ pipeline {
         stage('deploy to ecs') {
             steps {
                 sh '''#!/bin/sh -e
-
-                    echo " == get role arn == "
-                    ROLES=`aws iam list-roles | jq '.Roles[] | select(.AssumeRolePolicyDocument.Statement[].Principal.Service=="ecs.amazonaws.com"  and .RoleName=="esc-service-role")'`
-
-                    if [ "$ROLES" == "" ]; then
-                      echo "No matching roles. Make sure ${SERVICE_ROLE} exists and has a Trust Relationship with the service `ecs.amazonaws.com`"
-                      exit -1
-                    fi
-
-                    LB_ROLE=`echo $ROLES | jq -r .Arn`
 
                     echo " === Configuring ecs-cli ==="
                     ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
