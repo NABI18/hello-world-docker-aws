@@ -79,8 +79,8 @@ pipeline {
                 withEnv(["LB_ROLE=${LB_ROLE}"]) {
                     sh '''#!/bin/sh -e
                         echo "checking inside"
-                        echo "[${LB_ROLE}]"
-                        echo $LB_ROLE
+                        echo "[${ECS_CLUSTER_NAME}]"
+                        echo $ECS_CLUSTER_NAME
 
                         echo " === Configuring ecs-cli ==="
                         /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
