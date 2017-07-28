@@ -46,7 +46,6 @@ pipeline {
 
                     sh "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\" > upd-docker-compose.yml"
                    
-                    sh shell_cmd
                     sh 'cat upd-docker-compse.yml'
 
                     echo "  end debug 1"
