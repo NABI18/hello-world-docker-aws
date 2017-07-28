@@ -37,7 +37,7 @@ pipeline {
                     DOCKER_IMAGE_NAME = sh(
                         returnStdout: true,
                         script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.web.image'
-                    )
+                    ).trim()
                     LB_ROLE = sh(
                         returnStdout: true,
                         script: '''#!/bin/sh -e
@@ -51,7 +51,7 @@ pipeline {
 
                             echo $ROLES | jq -r .Arn
                         ''' // end shell script
-                    )
+                    ).trim()
                 }
                 echo DOCKER_IMAGE_NAME
                 echo "[$DOCKER_IMAGE_NAME]"
