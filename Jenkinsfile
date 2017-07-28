@@ -39,18 +39,9 @@ pipeline {
                         script: 'cat docker-compose.yml | docker run -i --rm jlordiales/jyparser get -r .services.hello_world.image'
                     ).trim()
 
-                    echo "debug 1"
-                    echo "[${DOCKER_IMAGE_NAME}]"
                     DOCKER_IMAGE_AND_TAG = "${DOCKER_IMAGE_NAME}:v_${BUILD_NUMBER}"
-                    echo "[${DOCKER_IMAGE_AND_TAG}]"
 
-                    sh "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\""
                     sh "cat docker-compose.yml | docker run -i --rm jlordiales/jyparser set .services.hello_world.image \\\"${DOCKER_IMAGE_AND_TAG}\\\" | tee upd-docker-compose.yml"
-
-                    sh 'cat upd-docker-compose.yml'
-
-                    echo "  end debug 1"
-                    sh 'exit -1'
                 }
             }
         }
@@ -81,7 +72,7 @@ pipeline {
                     /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
 
                     echo " === Create/Update Service === "
-                    /usr/local/bin/ecs-cli compose service up \
+                    /usr/local/bin/ecs-cli compose --file upd-docker-compose.yml service up \
                     --deployment-min-healthy-percent 0 \
                     --target-group-arn ${DEFAULT_TARGET} \
                     --container-name hello_world \
