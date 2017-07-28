@@ -77,6 +77,7 @@ pipeline {
         stage('deploy to ecs') {
             steps {
                 sh '''#!/bin/sh -e
+                    echo $LB_ROLE
 
                     echo " === Configuring ecs-cli ==="
                     /usr/local/bin/ecs-cli configure --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME}
