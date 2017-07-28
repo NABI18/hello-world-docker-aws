@@ -17,7 +17,7 @@ pipeline {
         ECS_CLUSTER_NAME = 'hello-world'
 
         // look in 'CloudFormation' -> 'Output' tab for "DefaultTarget" and "ServiceRole"
-        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/4c4a8ef1452548fa'
+        DEFAULT_TARGET = 'arn:aws:elasticloadbalancing:us-west-2:487471999079:targetgroup/default/3333deca3d9fa2e3'
         SERVICE_ROLE = 'ecs-service-EcsClusterStack'
     }
 
@@ -53,9 +53,6 @@ pipeline {
                         ''' // end shell script
                     ).trim()
                 }
-                echo DOCKER_IMAGE_NAME
-                echo "[$DOCKER_IMAGE_NAME]"
-                echo "[${DOCKER_IMAGE_NAME}]"
             }
         }
 
