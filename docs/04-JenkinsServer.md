@@ -9,7 +9,10 @@ pick `{project_dir}/cloudformation/jenkins.template`,
 then click **Next**
 1. Fill in the parameters (defaults are probably fine)
     * **Stack name:** "`Jenkins`"
-    * **EcsStackName:** '`EcsClusterStack`' (same name that you used for the Ecs Cluster Stack you created previously)
+    * **VPC ID:** (select the same VPC you created earlier)
+    * **Subnets:** (select the subnets in the same VPC)
+    * **Instance Type:** "`t2.medium`" (please select `medium` or larger for this demo)
+    * **KeyName:** '`hello-world-ecs`' (if you used a different name for your key pair, select that here)
 1. Click **Next**
 1. Click **Next** after adding tags or notifications (if you like)
     * Click **Cost** to view the estimated cost of the cluster
