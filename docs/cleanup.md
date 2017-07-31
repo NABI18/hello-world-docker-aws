@@ -6,6 +6,9 @@
 Go to the Project view, and click the **Disable Project** button. This will stop Jenkins from polling, as well as prevent
 Jenkins for deploying to AWS while we are trying to shut things down.
 
+## Delete the Jenkins Stack
+Go to **CloudFormation** and delete the `Jenkins` stack. It takes a few minutes, so go on to the next step while the deletion runs.
+
 ## Delete the Service and Deregister task
 
 1. Go to **EC2 Container Service** and go to the `hello-world` cluster.
@@ -16,7 +19,8 @@ Jenkins for deploying to AWS while we are trying to shut things down.
 1. Wait for **Running count** to be `0`, then **Delete** the service.
 
 ## Delete stacks
-Go to **CloudFormation** and delete the `Jenkins` stack first, then when that completes, delete the `EcsClusterStack`.
+Once the service's tasks are no longer running, delete the `EcsClusterStack`.
+
 Delete the `VpcStack` last (if you created it).
 
 You can watch the resources being deleted from the **Resources** tab.
