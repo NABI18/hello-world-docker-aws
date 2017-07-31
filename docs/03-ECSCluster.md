@@ -31,6 +31,7 @@ then click **Next**
 1. Fill in the parameters (for best results, launch into a new VPC)
     * **Stack name:** "`EcsClusterStack`"
     * **VpcId:** (select your VPC from the drop down)
+    * **Subnets:** (select the subnets in the same network as the VPC (e.g., in 10.192.xx.xx)
     * **KeyName:** "`hello-world-ecs`" (if you used a different name for your key pair, select that here)
 1. Click **Next**
 1. Click **Next** after adding tags or notifications (if you like)
