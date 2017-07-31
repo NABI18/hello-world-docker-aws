@@ -39,8 +39,8 @@ Let's make some changes to the JenkinsFile to use your repositories (git and doc
 | `AWS_REGION` | change if needed |
 | `DOCKER_REGISTRY` | For DockerHub, use `https://index.docker.io/v1/` |
 | `ECS_CLUSTER_NAME` | this must match the value of your cluster (in AWS, go to **EC2 Container Service** -> **Clusters** to check the name) |
-| `DEFAULT_TARGET` | This is the `arn` (identifier) of the LoadBalancer group. You can find this in the "Output" Tab of the EcsClusterStack CloudFormation. |
-| `SERVICE_ROLE` | This is the name of an IAM role created for the services. The Jenkins Build needs it in order to create or update a Service. |
+| `DEFAULT_TARGET` | This is the `arn` (identifier) of the LoadBalancer group. You can find this in the "Output" Tab of the **EcsClusterStack** CloudFormation. |
+| `SERVICE_ROLE` | This is the name of an IAM role created for the services. The Jenkins Build needs it in order to create or update a Service. You can find this in the "Output" Tab of the **EcsClusterStack** CloudFormation.|
 
 1. If you are impatient, change the polling interval from `5` minutes to a figure you prefer:
 
