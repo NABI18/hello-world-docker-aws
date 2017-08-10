@@ -24,7 +24,7 @@ The Outputs tab holds information that allows you to quickly see what is contain
 
 ## Create the Cluster
 
-1. In AWS, use the **Services* dropdown to go to **CLoudFormation** | **Create Stack**
+1. In AWS, use the **Services** dropdown to go to **CLoudFormation** | **Create Stack**
 1. **Upload a template to Amazon S3** then **choose file** and go to your clone directory, 
 pick `{project_dir}/cloudformation/ecs-cluster.yml`,
 then click **Next**
