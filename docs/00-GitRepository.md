@@ -40,7 +40,7 @@ Keep this window open.
 
 ---
 ## Create your account
-Go to [GitHub]https://github.com) and **Sign up for GitHub** if you do not have an account already.
+Go to [GitHub](https://github.com) and **Sign up for GitHub** if you do not have an account already.
 
 After you do, be sure to [Add a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/),
 so that you have access to push code to it from the command line.
